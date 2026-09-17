@@ -1,36 +1,7 @@
-import { useState, useEffect } from 'react';
-import type { TouchEvent } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import type { ChangeEvent } from 'react';
+import Webcam from 'react-webcam';
 import './index.css';
-import daunSehatImg from './assets/daun-sehat.jpg';
-import bercakDaunImg from './assets/bercak-daun.jpg';
-
-export interface LeafCondition {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-  badgeBg: string;
-  image: string;
-}
-
-const conditions: LeafCondition[] = [
-  {
-    id: 'sehat',
-    title: 'Daun Sehat',
-    description: 'Permukaan daun hijau merata, tekstur segar, tanpa bercak kuning kecokelatan. Pertanda tanaman ternutrisi baik.',
-    status: 'Kondisi Prima',
-    badgeBg: '#4E7728',
-    image: daunSehatImg,
-  },
-  {
-    id: 'bercak',
-    title: 'Early Blight',
-    description: 'Penyakit yang disebabkan oleh jamur patogen Alternaria solani. Penyakit ini menyerang tanaman dari keluarga Solanaceae, terutama tomat dan kentang, dan dapat menurunkan hasil panen secara drastis jika dibiarkan menyebar.',
-    status: 'Perlu Perawatan',
-    badgeBg: '#C05621',
-    image: bercakDaunImg,
-  },
-];
 
 interface CameraProps {
   onNavigate?: (tab: 'home' | 'camera' | 'summary') => void;
@@ -38,41 +9,18 @@ interface CameraProps {
 }
 
 export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<'home' | 'camera' | 'summary'>(activeTab);
-  const [animDirection, setAnimDirection] = useState<'left' | 'right' | null>(null);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+
+  const webcamRef = useRef<Webcam>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setCurrentTab(activeTab);
   }, [activeTab]);
-
-  const handlePrev = () => {
-    setAnimDirection('left');
-    setCurrentIndex((prev) => (prev === 0 ? conditions.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setAnimDirection('right');
-    setCurrentIndex((prev) => (prev === conditions.length - 1 ? 0 : prev + 1));
-  };
-
-  const handleTouchStart = (e: TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = (e: TouchEvent) => {
-    if (touchStart === null) return;
-    const touchEnd = e.changedTouches[0].clientX;
-    const diff = touchStart - touchEnd;
-
-    if (diff > 45) {
-      handleNext();
-    } else if (diff < -45) {
-      handlePrev();
-    }
-    setTouchStart(null);
-  };
 
   const handleTabClick = (tab: 'home' | 'camera' | 'summary') => {
     setCurrentTab(tab);
@@ -81,124 +29,220 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
     }
   };
 
-  const currentCondition = conditions[currentIndex];
+  const videoConstraints = {
+    facingMode: facingMode,
+    width: { ideal: 1280 },
+    height: { ideal: 720 },
+  };
+
+  // Tangkap foto dari webcam
+  const capturePhoto = useCallback(() => {
+    if (webcamRef.current) {
+      const imageSrc = webcamRef.current.getScreenshot();
+      if (imageSrc) {
+        setCapturedImage(imageSrc);
+      }
+    }
+  }, [webcamRef]);
+
+  // Ganti kamera depan / belakang
+  const toggleCamera = () => {
+    setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
+  };
+
+  // Upload file dari galeri sebagai alternatif
+  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCapturedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Kirim hasil scan ke halaman Summary
+  const handleProceedToDetect = () => {
+    setIsScanning(true);
+    setTimeout(() => {
+      setIsScanning(false);
+      handleTabClick('summary');
+    }, 600);
+  };
 
   return (
     <div className="w-full min-h-[100dvh] flex justify-center items-center bg-[#ede6d9] p-0 sm:p-4">
       <main className="w-full sm:max-w-[430px] min-h-[100dvh] sm:min-h-0 sm:h-[min(100dvh-2rem,880px)] bg-gradient-to-b from-[#f9deb7] via-[#fdf5ea] to-[#fffdfa] flex flex-col justify-between sm:rounded-[36px] sm:shadow-2xl relative overflow-y-auto overflow-x-hidden">
         {/* Header Title */}
-        <header className="pt-6 sm:pt-8 px-5 pb-2 text-center flex-shrink-0">
+        <header className="pt-6 sm:pt-7 px-5 pb-2 text-center flex-shrink-0">
           <h1 className="flex flex-col items-center gap-0.5 font-['Poppins'] font-black text-[clamp(21px,5.8vw,28px)] leading-tight tracking-[-0.3px] text-[#eb8e2d] uppercase select-none text-stroke-title">
-            <span>CAMERA</span>
+            <span>DETEKSI KAMERA</span>
             <span>TOMATKU</span>
           </h1>
         </header>
 
-        {/* Main Card */}
-        <section
-          className="mx-4 sm:mx-[18px] my-auto bg-[#728543] rounded-[28px] p-4 sm:p-[20px_14px_14px_14px] shadow-[0_16px_30px_-4px_rgba(90,115,45,0.38),0_8px_14px_-3px_rgba(0,0,0,0.1)] flex flex-col relative select-none touch-pan-y flex-shrink-0"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          aria-roledescription="carousel"
-          aria-label="Kondisi Daun Tomat"
-        >
-          {/* Card Top Text & Navigation */}
-          <div className="flex flex-col mb-3 sm:mb-4">
-            <div className="flex items-center justify-between gap-2">
-              <button
-                type="button"
-                className="w-9 h-9 flex items-center justify-center rounded-full text-[#adc278] hover:text-white hover:bg-white/10 active:scale-90 transition-all cursor-pointer flex-shrink-0"
-                onClick={handlePrev}
-                aria-label="Kondisi Sebelumnya"
-              >
-                <svg
-                  className="w-6 h-6"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-              </button>
-
-              <div className="flex-1 text-center px-1">
-                <h2
-                  className={`font-['Poppins'] text-[21px] sm:text-[23px] font-extrabold text-white tracking-tight mb-1 ${
-                    animDirection ? 'animate-fade' : ''
-                  }`}
-                  key={currentCondition.id + '-title'}
-                >
-                  {currentCondition.title}
-                </h2>
-                <p
-                  className={`text-[11.5px] sm:text-[12.2px] font-medium leading-relaxed text-[#edf2d8] mx-auto max-w-[270px] ${
-                    animDirection ? 'animate-fade' : ''
-                  }`}
-                  key={currentCondition.id + '-desc'}
-                >
-                  {currentCondition.description}
-                </p>
+        {/* Camera Scanner Viewport Area */}
+        <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-5 my-auto w-full">
+          {capturedImage ? (
+            /* Mode Preview Foto yang Berhasil Diambil */
+            <div className="w-full max-w-[350px] bg-[#728543] rounded-[28px] p-4 shadow-[0_16px_30px_-4px_rgba(90,115,45,0.38)] flex flex-col items-center animate-fade">
+              <div className="w-full aspect-[4/3] rounded-[20px] overflow-hidden bg-black mb-3.5 relative shadow-inner">
+                <img
+                  src={capturedImage}
+                  alt="Foto Daun Terdeteksi"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-semibold text-white flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  Foto Terambil
+                </div>
               </div>
 
-              <button
-                type="button"
-                className="w-9 h-9 flex items-center justify-center rounded-full text-[#adc278] hover:text-white hover:bg-white/10 active:scale-90 transition-all cursor-pointer flex-shrink-0"
-                onClick={handleNext}
-                aria-label="Kondisi Berikutnya"
-              >
-                <svg
-                  className="w-6 h-6"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+              <div className="w-full flex flex-col gap-2.5">
+                <button
+                  type="button"
+                  onClick={handleProceedToDetect}
+                  disabled={isScanning}
+                  className="w-full py-3 px-4 rounded-[20px] bg-gradient-to-r from-[#e58e26] to-[#d47b19] text-white font-bold text-[15px] shadow-[0_8px_20px_rgba(224,137,40,0.45)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </button>
+                  {isScanning ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      <span>Menganalisis Daun...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                      </svg>
+                      <span>Periksa Kondisi Daun</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setCapturedImage(null)}
+                  disabled={isScanning}
+                  className="w-full py-2.5 px-4 rounded-[20px] bg-white/15 hover:bg-white/25 text-white font-semibold text-[13.5px] transition-all cursor-pointer"
+                >
+                  Ambil Ulang Foto
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* Mode Live Camera Viewfinder */
+            <div className="w-full max-w-[360px] flex flex-col items-center">
+              {/* Box Frame Kamera */}
+              <div className="w-full aspect-[3/4] max-h-[400px] rounded-[28px] overflow-hidden relative shadow-[0_16px_34px_rgba(0,0,0,0.25)] bg-[#1e251a] flex items-center justify-center border-2 border-white/40">
+                <Webcam
+                  audio={false}
+                  ref={webcamRef}
+                  screenshotFormat="image/jpeg"
+                  videoConstraints={videoConstraints}
+                  onUserMedia={() => setHasPermission(true)}
+                  onUserMediaError={() => setHasPermission(false)}
+                  className="w-full h-full object-cover"
+                />
 
-          {/* Leaf Photo */}
-          <div className="w-full max-h-[260px] sm:max-h-[300px] aspect-square rounded-[20px] overflow-hidden bg-[#5d6f35] relative shadow-[inset_0_2px_8px_rgba(0,0,0,0.15)] mx-auto">
-            <img
-              src={currentCondition.image}
-              alt={currentCondition.title}
-              className={`w-full h-full object-cover block transition-transform duration-300 ${
-                animDirection ? 'animate-fade' : ''
-              }`}
-              key={currentCondition.id + '-img'}
-              loading="eager"
-            />
-          </div>
+                {/* Target Frame / Reticle di tengah kamera */}
+                <div className="absolute inset-8 pointer-events-none flex flex-col justify-between items-stretch">
+                  <div className="flex justify-between">
+                    <div className="w-6 h-6 border-t-3 border-l-3 border-[#eb8e2d] rounded-tl-lg" />
+                    <div className="w-6 h-6 border-t-3 border-r-3 border-[#eb8e2d] rounded-tr-lg" />
+                  </div>
 
-          {/* Indicator dots */}
-          <div className="flex justify-center items-center gap-1.5 mt-3 sm:mt-3.5">
-            {conditions.map((item, idx) => (
-              <button
-                key={item.id}
-                type="button"
-                className={`h-[7px] rounded-full transition-all duration-300 cursor-pointer ${
-                  idx === currentIndex ? 'w-5 bg-white' : 'w-[7px] bg-white/40'
-                }`}
-                onClick={() => {
-                  setAnimDirection(idx > currentIndex ? 'right' : 'left');
-                  setCurrentIndex(idx);
-                }}
-                aria-label={`Slide ${idx + 1}`}
-              />
-            ))}
-          </div>
-        </section>
+                  {/* Laser Scan line effect */}
+                  <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#eb8e2d] to-transparent opacity-80 animate-pulse-prompt" />
+
+                  <div className="flex justify-between">
+                    <div className="w-6 h-6 border-b-3 border-l-3 border-[#eb8e2d] rounded-bl-lg" />
+                    <div className="w-6 h-6 border-b-3 border-r-3 border-[#eb8e2d] rounded-br-lg" />
+                  </div>
+                </div>
+
+                {/* Hint Text */}
+                <div className="absolute top-3 inset-x-0 flex justify-center pointer-events-none">
+                  <span className="bg-black/50 backdrop-blur-md text-white text-[11.5px] px-3.5 py-1 rounded-full font-medium shadow-sm">
+                    Posisikan daun tomat di tengah kotak
+                  </span>
+                </div>
+
+                {/* Fallback Jika Akses Kamera Ditolak / Tidak Tersedia */}
+                {hasPermission === false && (
+                  <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center p-6 text-center z-20">
+                    <div className="text-3xl mb-2">📷⚠️</div>
+                    <h3 className="text-white font-bold text-[15px] mb-1">Akses Kamera Belum Diizinkan</h3>
+                    <p className="text-white/70 text-[12px] mb-4">
+                      Silakan izinkan akses kamera di pengaturan browser Anda atau upload foto daun dari galeri.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="py-2 px-4 bg-[#eb8e2d] rounded-full text-white text-[12.5px] font-bold"
+                    >
+                      Pilih Foto dari Galeri
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Shutter & Controls Bar */}
+              <div className="w-full flex items-center justify-between px-6 mt-4 sm:mt-5">
+                {/* Tombol Upload File */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-11 h-11 rounded-full bg-white/80 hover:bg-white text-gray-700 shadow-md flex items-center justify-center transition-transform active:scale-90 cursor-pointer"
+                  aria-label="Upload dari galeri"
+                  title="Upload dari galeri"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+
+                {/* Tombol Jepret Kamera Utama */}
+                <button
+                  type="button"
+                  onClick={capturePhoto}
+                  className="w-16 h-16 rounded-full border-4 border-[#eb8e2d] bg-white shadow-[0_4px_16px_rgba(235,142,45,0.4)] flex items-center justify-center transition-transform hover:scale-105 active:scale-90 cursor-pointer group"
+                  aria-label="Ambil foto"
+                >
+                  <div className="w-11 h-11 rounded-full bg-[#eb8e2d] group-active:scale-90 transition-transform" />
+                </button>
+
+                {/* Tombol Ganti Kamera Depan / Belakang */}
+                <button
+                  type="button"
+                  onClick={toggleCamera}
+                  className="w-11 h-11 rounded-full bg-white/80 hover:bg-white text-gray-700 shadow-md flex items-center justify-center transition-transform active:scale-90 cursor-pointer"
+                  aria-label="Ganti kamera"
+                  title="Ganti kamera"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Bottom Navigation Bar */}
         <nav
-          className="bg-[#34363a] rounded-t-[28px] pt-4 px-6 pb-5 max-sm:pb-[calc(16px+env(safe-area-inset-bottom,0px))] flex justify-around items-center mt-4 sm:mt-5 shadow-[0_-4px_18px_rgba(0,0,0,0.12)] flex-shrink-0 w-full"
+          className="bg-[#34363a] rounded-t-[28px] pt-4 px-6 pb-5 max-sm:pb-[calc(16px+env(safe-area-inset-bottom,0px))] flex justify-around items-center mt-3 shadow-[0_-4px_18px_rgba(0,0,0,0.12)] flex-shrink-0 w-full"
           aria-label="Navigasi Utama"
         >
           <button
