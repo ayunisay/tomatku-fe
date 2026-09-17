@@ -279,7 +279,8 @@ body {
 
 /* Mobile full-width override */
 @media (max-width: 480px) {
-  .tomatku-container {
+  .tomatku-container,
+  .landing-container {
     max-width: 100%;
     box-shadow: none;
   }
@@ -292,3 +293,129 @@ body {
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* =========================================
+   Landing / Splash Page Styles
+   ========================================= */
+.landing-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  background: #ede6d9;
+}
+
+.landing-container {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  user-select: none;
+  overflow: hidden;
+  padding: 24px;
+}
+
+.landing-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: logoEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.landing-brand.brand-pulse {
+  transform: scale(1.03);
+}
+
+.landing-logo-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.landing-icon-img {
+  width: clamp(100px, 28vw, 136px);
+  height: clamp(100px, 28vw, 136px);
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.06));
+}
+
+.landing-title {
+  font-family: var(--font-heading);
+  font-size: clamp(34px, 8.5vw, 44px);
+  font-weight: 800;
+  color: #383a3f;
+  letter-spacing: -0.6px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.brand-suffix {
+  color: #383a3f;
+}
+
+/* Subtle tap prompt */
+.landing-prompt {
+  position: absolute;
+  bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+  animation: pulsePrompt 2s infinite ease-in-out;
+}
+
+.landing-container:hover .landing-prompt {
+  opacity: 0.95;
+}
+
+.prompt-indicator {
+  width: 32px;
+  height: 4px;
+  background: #cbd5e0;
+  border-radius: 2px;
+}
+
+.prompt-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #718096;
+  letter-spacing: 0.2px;
+}
+
+@keyframes logoEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulsePrompt {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 0.85;
+  }
+}
+

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { TouchEvent } from 'react';
 import './index.css';
 import daunSehatImg from './assets/daun-sehat.jpg';
 import bercakDaunImg from './assets/bercak-daun.jpg';
@@ -65,11 +66,11 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
     setCurrentIndex((prev) => (prev === conditions.length - 1 ? 0 : prev + 1));
   };
 
-  const handleTouchStart = (e: React.TouchEvent) => {
+  const handleTouchStart = (e: TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX);
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
+  const handleTouchEnd = (e: TouchEvent) => {
     if (touchStart === null) return;
     const touchEnd = e.changedTouches[0].clientX;
     const diff = touchStart - touchEnd;

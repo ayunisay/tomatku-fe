@@ -1,22 +1,79 @@
 import { useState } from 'react';
+import Landing from './landing';
 import Home from './index';
 
-type NavTab = 'home' | 'camera' | 'summary';
+type PageState = 'landing' | 'home' | 'camera' | 'summary';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<NavTab>('home');
+  const [currentPage, setCurrentPage] = useState<PageState>('landing');
 
-  const handleNavigate = (tab: NavTab) => {
-    setActiveTab(tab);
+  const handleNavigate = (tab: 'home' | 'camera' | 'summary') => {
+    setCurrentPage(tab);
   };
 
   return (
     <div className="app-root">
-      {activeTab === 'home' && (
-        <Home onNavigate={handleNavigate} activeTab={activeTab} />
+      {/* Quick dev switch banner to jump between Landing & Home */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 10,
+          right: 10,
+          zIndex: 9999,
+          display: 'flex',
+          gap: '6px',
+          background: 'rgba(0,0,0,0.65)',
+          padding: '4px 8px',
+          borderRadius: '20px',
+          backdropFilter: 'blur(8px)',
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setCurrentPage('landing')}
+          style={{
+            background: currentPage === 'landing' ? '#eb8e2d' : 'transparent',
+            color: '#fff',
+            border: 'none',
+            fontSize: '11px',
+            padding: '4px 10px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: currentPage === 'landing' ? 700 : 500,
+          }}
+        >
+          Landing
+        </button>
+        <button
+          type="button"
+          onClick={() => setCurrentPage('home')}
+          style={{
+            background: currentPage === 'home' ? '#eb8e2d' : 'transparent',
+            color: '#fff',
+            border: 'none',
+            fontSize: '11px',
+            padding: '4px 10px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: currentPage === 'home' ? 700 : 500,
+          }}
+        >
+          Home
+        </button>
+      </div>
+
+      {/* Landing Page */}
+      {currentPage === 'landing' && (
+        <Landing onStart={() => setCurrentPage('home')} />
       )}
 
-      {activeTab === 'camera' && (
+      {/* Home Page */}
+      {currentPage === 'home' && (
+        <Home onNavigate={handleNavigate} activeTab="home" />
+      )}
+
+      {/* Camera Tab Placeholder */}
+      {currentPage === 'camera' && (
         <div className="tomatku-wrapper">
           <main className="tomatku-container" style={{ padding: '38px 20px 0 20px', textAlign: 'center' }}>
             <h1 className="tomatku-title" style={{ fontSize: '24px', marginBottom: '20px' }}>
@@ -64,7 +121,8 @@ export default function App() {
         </div>
       )}
 
-      {activeTab === 'summary' && (
+      {/* Summary Tab Placeholder */}
+      {currentPage === 'summary' && (
         <div className="tomatku-wrapper">
           <main className="tomatku-container" style={{ padding: '38px 20px 0 20px', textAlign: 'center' }}>
             <h1 className="tomatku-title" style={{ fontSize: '24px', marginBottom: '20px' }}>
