@@ -13,6 +13,7 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [hasAgreedPermission, setHasAgreedPermission] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
 
   const webcamRef = useRef<Webcam>(null);
@@ -74,6 +75,39 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
   return (
     <div className="w-full min-h-[100dvh] flex justify-center items-center bg-[#ede6d9] p-0 sm:p-4">
       <main className="w-full sm:max-w-[430px] min-h-[100dvh] sm:min-h-0 sm:h-[min(100dvh-2rem,880px)] bg-gradient-to-b from-[#f9deb7] via-[#fdf5ea] to-[#fffdfa] flex flex-col justify-between sm:rounded-[36px] sm:shadow-2xl relative overflow-y-auto overflow-x-hidden">
+        {/* Modal Minta Izin Kamera (Muncul Sebelum Kamera Aktif) */}
+        {!hasAgreedPermission && (
+          <div className="absolute inset-0 z-40 bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-5 animate-fade">
+            <div className="w-full max-w-[340px] bg-[#233523]/90 backdrop-blur-xl border border-white/20 rounded-[26px] p-6 sm:p-7 shadow-[0_24px_50px_rgba(0,0,0,0.65)] flex flex-col items-center text-center">
+              <h2 className="font-['Poppins'] font-black text-[18px] sm:text-[19px] text-white tracking-wide mb-3 uppercase leading-snug">
+                SIAP SCAN DAUN TOMATMU?
+              </h2>
+
+              <p className="text-[12.8px] sm:text-[13.5px] font-normal leading-relaxed text-white/90 text-center mb-6">
+                izinkan akses kamera untuk mendeteksi kondisi daun tomat. saat ini, sistem fokus mengenali daun sehat dan mendeteksi gejala penyakit bercak kering.
+              </p>
+
+              <div className="w-full grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleTabClick('home')}
+                  className="w-full py-3 px-3 rounded-[18px] bg-[#752c2c] hover:bg-[#853434] active:scale-95 text-white font-bold text-[14.5px] shadow-md transition-all cursor-pointer"
+                >
+                  Nanti Saja
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setHasAgreedPermission(true)}
+                  className="w-full py-3 px-3 rounded-[18px] bg-[#788944] hover:bg-[#879b4d] active:scale-95 text-white font-bold text-[14.5px] shadow-md transition-all cursor-pointer"
+                >
+                  Izinkan
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header Title */}
         <header className="pt-6 sm:pt-7 px-5 pb-2 text-center flex-shrink-0">
           <h1 className="flex flex-col items-center gap-0.5 font-['Poppins'] font-black text-[clamp(21px,5.8vw,28px)] leading-tight tracking-[-0.3px] text-[#eb8e2d] uppercase select-none text-stroke-title">
@@ -138,16 +172,22 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
             /* Mode Live Camera Viewfinder */
             <div className="w-full max-w-[360px] flex flex-col items-center">
               {/* Box Frame Kamera */}
-              <div className="w-full aspect-[3/4] max-h-[400px] rounded-[28px] overflow-hidden relative shadow-[0_16px_34px_rgba(0,0,0,0.25)] bg-[#1e251a] flex items-center justify-center border-2 border-white/40">
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  videoConstraints={videoConstraints}
-                  onUserMedia={() => setHasPermission(true)}
-                  onUserMediaError={() => setHasPermission(false)}
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-full aspect-[3/4] max-h-[380px] rounded-[28px] overflow-hidden relative shadow-[0_16px_34px_rgba(0,0,0,0.25)] bg-[#1e251a] flex items-center justify-center border-2 border-white/40">
+                {hasAgreedPermission ? (
+                  <Webcam
+                    audio={false}
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    videoConstraints={videoConstraints}
+                    onUserMedia={() => setHasPermission(true)}
+                    onUserMediaError={() => setHasPermission(false)}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-[#1e251a] flex items-center justify-center text-white/50 text-xs">
+                    Kamera menunggu izin...
+                  </div>
+                )}
 
                 {/* Target Frame / Reticle di tengah kamera */}
                 <div className="absolute inset-8 pointer-events-none flex flex-col justify-between items-stretch">
@@ -178,12 +218,12 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
                     <div className="text-3xl mb-2">📷⚠️</div>
                     <h3 className="text-white font-bold text-[15px] mb-1">Akses Kamera Belum Diizinkan</h3>
                     <p className="text-white/70 text-[12px] mb-4">
-                      Silakan izinkan akses kamera di pengaturan browser Anda atau upload foto daun dari galeri.
+                      Silakan izinkan akses kamera di browser Anda atau upload foto daun dari galeri.
                     </p>
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="py-2 px-4 bg-[#eb8e2d] rounded-full text-white text-[12.5px] font-bold"
+                      className="py-2 px-4 bg-[#eb8e2d] rounded-full text-white text-[12.5px] font-bold cursor-pointer"
                     >
                       Pilih Foto dari Galeri
                     </button>
@@ -191,8 +231,15 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
                 )}
               </div>
 
+              {/* Mode Selector (Portrait / Photo / Night) */}
+              <div className="flex items-center justify-center gap-7 mt-3 text-[12.5px] font-semibold select-none">
+                <span className="text-gray-400">Portrait</span>
+                <span className="text-[#eb8e2d] font-bold underline underline-offset-4">Photo</span>
+                <span className="text-gray-400">Night</span>
+              </div>
+
               {/* Shutter & Controls Bar */}
-              <div className="w-full flex items-center justify-between px-6 mt-4 sm:mt-5">
+              <div className="w-full flex items-center justify-between px-6 mt-2.5 sm:mt-3">
                 {/* Tombol Upload File */}
                 <button
                   type="button"
@@ -217,10 +264,10 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
                 <button
                   type="button"
                   onClick={capturePhoto}
-                  className="w-16 h-16 rounded-full border-4 border-[#eb8e2d] bg-white shadow-[0_4px_16px_rgba(235,142,45,0.4)] flex items-center justify-center transition-transform hover:scale-105 active:scale-90 cursor-pointer group"
+                  className="w-15 h-15 rounded-full border-4 border-[#eb8e2d] bg-white shadow-[0_4px_16px_rgba(235,142,45,0.4)] flex items-center justify-center transition-transform hover:scale-105 active:scale-90 cursor-pointer group"
                   aria-label="Ambil foto"
                 >
-                  <div className="w-11 h-11 rounded-full bg-[#eb8e2d] group-active:scale-90 transition-transform" />
+                  <div className="w-10 h-10 rounded-full bg-[#eb8e2d] group-active:scale-90 transition-transform" />
                 </button>
 
                 {/* Tombol Ganti Kamera Depan / Belakang */}
@@ -242,7 +289,7 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
 
         {/* Bottom Navigation Bar */}
         <nav
-          className="bg-[#34363a] rounded-t-[28px] pt-4 px-6 pb-5 max-sm:pb-[calc(16px+env(safe-area-inset-bottom,0px))] flex justify-around items-center mt-3 shadow-[0_-4px_18px_rgba(0,0,0,0.12)] flex-shrink-0 w-full"
+          className="bg-[#34363a] rounded-t-[28px] pt-4 px-6 pb-5 max-sm:pb-[calc(16px+env(safe-area-inset-bottom,0px))] flex justify-around items-center mt-2 shadow-[0_-4px_18px_rgba(0,0,0,0.12)] flex-shrink-0 w-full z-20"
           aria-label="Navigasi Utama"
         >
           <button
