@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import type { KeyboardEvent } from 'react';
-import './index.css';
 import tomatkuIcon from './assets/tomatku-icon.png';
 
 interface LandingProps {
@@ -11,18 +10,24 @@ interface LandingProps {
 
 export default function Landing({
   onStart,
-  autoRedirect = false,
-  redirectDelay = 2500,
 }: LandingProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
-    if (!autoRedirect || !onStart) return;
-    const timer = setTimeout(() => {
-      onStart();
-    }, redirectDelay);
-    return () => clearTimeout(timer);
-  }, [autoRedirect, onStart, redirectDelay]);
+    const exitTimer = setTimeout(() => {
+      setIsExiting(true);
+    }, 2500);
+
+    const switchTimer = setTimeout(() => {
+      if (onStart) onStart();
+    }, 3000);
+
+    return () => {
+      clearTimeout(exitTimer);
+      clearTimeout(switchTimer);
+    };
+  }, [onStart]);
 
   const handleClick = () => {
     if (onStart) {
@@ -31,9 +36,13 @@ export default function Landing({
   };
 
   return (
-    <div className="landing-wrapper">
+    <div
+      className={`w-full min-h-[100dvh] flex justify-center items-center bg-[#ede6d9] sm:p-4 transition-all duration-500 ease-out ${
+        isExiting ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+      }`}
+    >
       <main
-        className="landing-container"
+        className="w-full sm:max-w-[430px] min-h-[100dvh] sm:min-h-0 sm:h-[min(100dvh-2rem,880px)] bg-white flex flex-col justify-center items-center relative cursor-pointer select-none overflow-hidden p-6 sm:rounded-[36px] sm:shadow-2xl"
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -45,24 +54,22 @@ export default function Landing({
         }}
       >
         {/* Brand Logo & Name */}
-        <div className={`landing-brand ${isHovered ? 'brand-pulse' : ''}`}>
-          <div className="landing-logo-group">
+        <div
+          className={`flex flex-col items-center justify-center transition-transform duration-300 ease-out animate-entrance ${
+            isHovered ? 'scale-105' : 'scale-100'
+          }`}
+        >
+          <div className="flex items-center justify-center gap-0">
             <img
               src={tomatkuIcon}
               alt="Logo TomatKU"
-              className="landing-icon-img"
+              className="w-[clamp(100px,28vw,136px)] h-[clamp(100px,28vw,136px)] object-contain drop-shadow-md transition-transform duration-300"
             />
-            <h1 className="landing-title">
+            <h1 className="-ml-3 sm:-ml-4 font-['Poppins'] font-extrabold text-[clamp(48px,15vw,50px)] text-[#383a3f] tracking-tight leading-none flex items-center">
               <span>Tomat</span>
-              <span className="brand-suffix">KU</span>
+              <span>KU</span>
             </h1>
           </div>
-        </div>
-
-        {/* Subtle tap/click prompt at the bottom */}
-        <div className="landing-prompt">
-          <span className="prompt-indicator"></span>
-          <p className="prompt-text">Ketuk di mana saja untuk mulai</p>
         </div>
       </main>
     </div>

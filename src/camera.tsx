@@ -32,12 +32,12 @@ const conditions: LeafCondition[] = [
   },
 ];
 
-interface SummaryProps {
+interface CameraProps {
   onNavigate?: (tab: 'home' | 'camera' | 'summary') => void;
   activeTab?: 'home' | 'camera' | 'summary';
 }
 
-export default function Summary({ onNavigate, activeTab = 'summary' }: SummaryProps) {
+export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<'home' | 'camera' | 'summary'>(activeTab);
   const [animDirection, setAnimDirection] = useState<'left' | 'right' | null>(null);
@@ -89,7 +89,8 @@ export default function Summary({ onNavigate, activeTab = 'summary' }: SummaryPr
         {/* Header Title */}
         <header className="pt-6 sm:pt-8 px-5 pb-2 text-center flex-shrink-0">
           <h1 className="flex flex-col items-center gap-0.5 font-['Poppins'] font-black text-[clamp(21px,5.8vw,28px)] leading-tight tracking-[-0.3px] text-[#eb8e2d] uppercase select-none text-stroke-title">
-            <span>HASIL DETEKSI</span>
+            <span>CAMERA</span>
+            <span>TOMATKU</span>
           </h1>
         </header>
 
@@ -233,4 +234,4 @@ export default function Summary({ onNavigate, activeTab = 'summary' }: SummaryPr
   );
 }
 
-export { Summary };
+export { Camera };

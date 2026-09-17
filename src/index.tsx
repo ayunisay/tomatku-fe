@@ -3,7 +3,6 @@ import type { TouchEvent } from 'react';
 import './index.css';
 import daunSehatImg from './assets/daun-sehat.jpg';
 import bercakDaunImg from './assets/bercak-daun.jpg';
-import daunKuningImg from './assets/daun-kuning.jpg';
 
 export interface LeafCondition {
   id: string;
@@ -25,19 +24,11 @@ const conditions: LeafCondition[] = [
   },
   {
     id: 'bercak',
-    title: 'Bercak Daun',
-    description: 'Terdapat bercak cokelat kehitaman melingkar dengan tepi menguning. Gejala umum infeksi jamur bercak daun atau hawar.',
+    title: 'Early Blight',
+    description: 'Penyakit yang disebabkan oleh jamur patogen Alternaria solani. Penyakit ini menyerang tanaman dari keluarga Solanaceae, terutama tomat dan kentang, dan dapat menurunkan hasil panen secara drastis jika dibiarkan menyebar.',
     status: 'Perlu Perawatan',
     badgeBg: '#C05621',
     image: bercakDaunImg,
-  },
-  {
-    id: 'kuning',
-    title: 'Daun Menguning',
-    description: 'Helai daun memudar menjadi kuning dengan tepi kering. Indikasi klorosis, kekurangan unsur hara nitrogen, atau virus.',
-    status: 'Defisiensi Nutrisi',
-    badgeBg: '#D69E2E',
-    image: daunKuningImg,
   },
 ];
 
@@ -93,11 +84,11 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
   const currentCondition = conditions[currentIndex];
 
   return (
-    <div className="tomatku-wrapper">
-      <main className="tomatku-container">
+    <div className="w-full min-h-[100dvh] flex justify-center items-center bg-[#ede6d9] p-0 sm:p-4">
+      <main className="w-full sm:max-w-[430px] min-h-[100dvh] sm:min-h-0 sm:h-[min(100dvh-2rem,880px)] bg-gradient-to-b from-[#f9deb7] via-[#fdf5ea] to-[#fffdfa] flex flex-col justify-between sm:rounded-[36px] sm:shadow-2xl relative overflow-y-auto overflow-x-hidden">
         {/* Header Title */}
-        <header className="tomatku-header">
-          <h1 className="tomatku-title">
+        <header className="pt-30 sm:pt-28 text-center flex-shrink-0">
+          <h1 className="flex flex-col items-center gap-0.5 font-['Poppins'] font-black text-[clamp(21px,5.8vw,28px)] leading-tight tracking-[-0.3px] text-[#eb8e2d] uppercase select-none text-stroke-title">
             <span>KENALI KONDISI</span>
             <span>DAUN TOMATMU</span>
           </h1>
@@ -105,23 +96,23 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
 
         {/* Main Card */}
         <section
-          className="condition-card"
+          className="mx-4 mb-30 sm:mx-[18px] my-auto bg-[#728543] rounded-[28px] p-4 sm:p-[20px_14px_14px_14px] shadow-[0_16px_30px_-4px_rgba(90,115,45,0.38),0_8px_14px_-3px_rgba(0,0,0,0.1)] flex flex-col relative select-none touch-pan-y flex-shrink-0"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           aria-roledescription="carousel"
           aria-label="Kondisi Daun Tomat"
         >
           {/* Card Top Text & Navigation */}
-          <div className="card-content-top">
-            <div className="card-header-row">
+          <div className="flex flex-col mb-3 sm:mb-4">
+            <div className="flex items-center justify-between gap-2">
               <button
                 type="button"
-                className="nav-arrow-btn left"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-[#adc278] hover:text-white hover:bg-white/10 active:scale-90 transition-all cursor-pointer flex-shrink-0"
                 onClick={handlePrev}
                 aria-label="Kondisi Sebelumnya"
               >
                 <svg
-                  className="arrow-icon"
+                  className="w-6 h-6"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -133,23 +124,33 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
                 </svg>
               </button>
 
-              <div className="card-text-group">
-                <h2 className={`condition-name ${animDirection ? 'animate-fade' : ''}`} key={currentCondition.id + '-title'}>
+              <div className="flex-1 text-center px-1">
+                <h2
+                  className={`font-['Poppins'] text-[21px] sm:text-[23px] font-extrabold text-white tracking-tight mb-1 ${
+                    animDirection ? 'animate-fade' : ''
+                  }`}
+                  key={currentCondition.id + '-title'}
+                >
                   {currentCondition.title}
                 </h2>
-                <p className={`condition-desc ${animDirection ? 'animate-fade' : ''}`} key={currentCondition.id + '-desc'}>
+                <p
+                  className={`text-[11.5px] sm:text-[12.2px] font-medium leading-relaxed text-[#edf2d8] mx-auto max-w-[270px] ${
+                    animDirection ? 'animate-fade' : ''
+                  }`}
+                  key={currentCondition.id + '-desc'}
+                >
                   {currentCondition.description}
                 </p>
               </div>
 
               <button
                 type="button"
-                className="nav-arrow-btn right"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-[#adc278] hover:text-white hover:bg-white/10 active:scale-90 transition-all cursor-pointer flex-shrink-0"
                 onClick={handleNext}
                 aria-label="Kondisi Berikutnya"
               >
                 <svg
-                  className="arrow-icon"
+                  className="w-6 h-6"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -164,23 +165,27 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
           </div>
 
           {/* Leaf Photo */}
-          <div className="card-image-wrapper">
+          <div className="w-full max-h-[360px] sm:max-h-[300px] aspect-square rounded-[20px] overflow-hidden bg-[#5d6f35] relative shadow-[inset_0_2px_8px_rgba(0,0,0,0.15)] mx-auto">
             <img
               src={currentCondition.image}
               alt={currentCondition.title}
-              className={`leaf-photo ${animDirection ? 'animate-fade' : ''}`}
+              className={`w-full h-full object-cover block transition-transform duration-300 ${
+                animDirection ? 'animate-fade' : ''
+              }`}
               key={currentCondition.id + '-img'}
               loading="eager"
             />
           </div>
 
           {/* Indicator dots */}
-          <div className="carousel-indicators">
+          <div className="flex justify-center items-center gap-1.5 mt-3 sm:mt-3.5">
             {conditions.map((item, idx) => (
               <button
                 key={item.id}
                 type="button"
-                className={`indicator-dot ${idx === currentIndex ? 'active' : ''}`}
+                className={`h-[7px] rounded-full transition-all duration-300 cursor-pointer ${
+                  idx === currentIndex ? 'w-5 bg-white' : 'w-[7px] bg-white/40'
+                }`}
                 onClick={() => {
                   setAnimDirection(idx > currentIndex ? 'right' : 'left');
                   setCurrentIndex(idx);
@@ -192,24 +197,33 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
         </section>
 
         {/* Bottom Navigation Bar */}
-        <nav className="bottom-nav" aria-label="Navigasi Utama">
+        <nav
+          className="bg-[#34363a] rounded-t-[28px] pt-4 px-6 pb-5 max-sm:pb-[calc(16px+env(safe-area-inset-bottom,0px))] flex justify-around items-center mt-4 sm:mt-5 shadow-[0_-4px_18px_rgba(0,0,0,0.12)] flex-shrink-0 w-full"
+          aria-label="Navigasi Utama"
+        >
           <button
             type="button"
-            className={`nav-item ${currentTab === 'home' ? 'active' : ''}`}
+            className={`bg-transparent border-none cursor-pointer font-['Poppins'] text-[15px] sm:text-[15.5px] tracking-[-0.2px] py-1.5 px-3.5 rounded-[20px] transition-all hover:text-white active:scale-95 ${
+              currentTab === 'home' ? 'text-[#eb8e2d] font-bold' : 'text-[#e2e2e2] font-semibold'
+            }`}
             onClick={() => handleTabClick('home')}
           >
             Home
           </button>
           <button
             type="button"
-            className={`nav-item ${currentTab === 'camera' ? 'active' : ''}`}
+            className={`bg-transparent border-none cursor-pointer font-['Poppins'] text-[15px] sm:text-[15.5px] tracking-[-0.2px] py-1.5 px-3.5 rounded-[20px] transition-all hover:text-white active:scale-95 ${
+              currentTab === 'camera' ? 'text-[#eb8e2d] font-bold' : 'text-[#e2e2e2] font-semibold'
+            }`}
             onClick={() => handleTabClick('camera')}
           >
             Camera
           </button>
           <button
             type="button"
-            className={`nav-item ${currentTab === 'summary' ? 'active' : ''}`}
+            className={`bg-transparent border-none cursor-pointer font-['Poppins'] text-[15px] sm:text-[15.5px] tracking-[-0.2px] py-1.5 px-3.5 rounded-[20px] transition-all hover:text-white active:scale-95 ${
+              currentTab === 'summary' ? 'text-[#eb8e2d] font-bold' : 'text-[#e2e2e2] font-semibold'
+            }`}
             onClick={() => handleTabClick('summary')}
           >
             Summary
