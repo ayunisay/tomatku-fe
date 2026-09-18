@@ -1,10 +1,10 @@
-# 🍅 TomatKU - Tomato Leaf Disease Detection Web App (Frontend)
+# TomatKU - Tomato Leaf Disease Detection Web App (Frontend)
 
 **TomatKU** adalah aplikasi web modern berbasis React dan Tailwind CSS yang dirancang untuk membantu petani dan penghobi tanaman dalam mengenali kondisi kesehatan daun tanaman tomat secara cepat dan praktis. Aplikasi ini berfokus pada pengenalan daun tomat sehat serta deteksi dini penyakit **Bercak Kering (*Early Blight / Alternaria solani*)** melalui kamera maupun unggah foto.
 
 ---
 
-## 🌟 Fitur Utama
+## Fitur Utama
 
 1. **Splash Screen & Onboarding Interaktif**
    - Halaman pembuka dengan animasi logo TomatKU.
@@ -26,7 +26,7 @@
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## Teknologi yang Digunakan
 
 * **Framework & Library:**
   * [React 19](https://react.dev/)
@@ -42,7 +42,7 @@
 
 ---
 
-## 🚀 Memulai Proyek (Getting Started)
+## Memulai Proyek (Getting Started)
 
 ### Prasyarat
 Pastikan Anda telah menginstal:
@@ -80,7 +80,7 @@ Pastikan Anda telah menginstal:
 
 ---
 
-## 📁 Struktur Direktori
+## Struktur Direktori
 
 ```text
 tomatku-fe/
@@ -101,6 +101,6 @@ tomatku-fe/
 
 ---
 
-## 📄 Lisensi
+## Lisensi
 
-Proyek ini dikembangkan untuk kebutuhan pemantauan dan edukasi kesehatan tanaman tomat. Silakan gunakan dan kembangkan sesuai kebutuhan.
+Proyek ini dikembangkan untuk kebutuhan pemantauan dan edukasi kesehatan tanaman tomat. Silahkan digunakan dan dikembangkan sesuai kebutuhan.
