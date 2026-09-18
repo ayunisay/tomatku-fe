@@ -17,7 +17,7 @@ const conditions: LeafCondition[] = [
   {
     id: 'sehat',
     title: 'Daun Sehat',
-    description: 'Permukaan daun hijau merata, tekstur segar, tanpa bercak kuning kecokelatan. Pertanda tanaman ternutrisi baik.',
+    description: 'Daun tomat dalam kondisi sehat ditandai dengan warna hijau segar yang merata serta tekstur helaian yang kokoh. Kondisi ini menunjukkan proses fotosintesis dan produksi klorofil berjalan optimal, serapan air stabil, serta kebutuhan nutrisi makro dan mikro tercukupi dengan baik tanpa adanya gejala infeksi jamur, bakteri, maupun serangan hama.',
     status: 'Kondisi Prima',
     badgeBg: '#4E7728',
     image: daunSehatImg,
@@ -25,7 +25,7 @@ const conditions: LeafCondition[] = [
   {
     id: 'bercak',
     title: 'Early Blight',
-    description: 'Penyakit yang disebabkan oleh jamur patogen Alternaria solani. Penyakit ini menyerang tanaman dari keluarga Solanaceae, terutama tomat dan kentang, dan dapat menurunkan hasil panen secara drastis jika dibiarkan menyebar.',
+    description: 'Early blight pada tomat ditandai dengan bercak gelap kecokelatan pada daun, seringkali berbentuk konsentris mirip mata atau target, dengan bagian tepi yang sedikit meninggi. Penyakit yang disebabkan oleh jamur patogen Alternaria solani ini dapat berkembang pesat pada kondisi lembap dan hangat, menyebabkan daun menguning, kering, kemudian gugur sebelum waktunya sehingga mengurangi kemampuan tanaman berfotosintesis dan memengaruhi kualitas serta kuantitas hasil panen secara signifikan.',
     status: 'Perlu Perawatan',
     badgeBg: '#C05621',
     image: bercakDaunImg,
@@ -85,9 +85,9 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
 
   return (
     <div className="w-full min-h-[100dvh] flex justify-center items-center bg-[#ede6d9] p-0 sm:p-4">
-      <main className="w-full sm:max-w-[430px] min-h-[100dvh] sm:min-h-0 sm:h-[min(100dvh-2rem,880px)] bg-gradient-to-b from-[#f9deb7] via-[#fdf5ea] to-[#fffdfa] flex flex-col justify-between sm:rounded-[36px] sm:shadow-2xl relative overflow-y-auto overflow-x-hidden">
+      <main className="w-full sm:max-w-[430px] min-h-[100dvh] sm:min-h-0 sm:h-[min(100dvh-2rem,880px)] bg-gradient-to-b from-[#f9deb7] via-[#fdf5ea] to-[#fffdfa] flex flex-col sm:rounded-[36px] sm:shadow-2xl relative overflow-y-auto overflow-x-hidden">
         {/* Header Title */}
-        <header className="pt-30 sm:pt-28 text-center flex-shrink-0">
+        <header className="pt-20 sm:pt-16 pb-1 text-center flex-shrink-0">
           <h1 className="flex flex-col items-center gap-0.5 font-['Poppins'] font-black text-[clamp(21px,5.8vw,28px)] leading-tight tracking-[-0.3px] text-[#eb8e2d] uppercase select-none text-stroke-title">
             <span>KENALI KONDISI</span>
             <span>DAUN TOMATMU</span>
@@ -96,7 +96,7 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
 
         {/* Main Card */}
         <section
-          className="mx-4 mb-30 sm:mx-[18px] my-auto bg-[#728543] rounded-[28px] p-4 sm:p-[20px_14px_14px_14px] shadow-[0_16px_30px_-4px_rgba(90,115,45,0.38),0_8px_14px_-3px_rgba(0,0,0,0.1)] flex flex-col relative select-none touch-pan-y flex-shrink-0"
+          className="mx-4 sm:mx-[18px] mt-4 sm:mt-5 mb-6 bg-[#728543] rounded-[28px] p-4 sm:p-[20px_14px_14px_14px] shadow-[0_16px_30px_-4px_rgba(90,115,45,0.38),0_8px_14px_-3px_rgba(0,0,0,0.1)] flex flex-col relative select-none touch-pan-y flex-shrink-0"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           aria-roledescription="carousel"
@@ -134,7 +134,7 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
                   {currentCondition.title}
                 </h2>
                 <p
-                  className={`text-[11.5px] sm:text-[12.2px] font-medium leading-relaxed text-[#edf2d8] mx-auto max-w-[270px] ${
+                  className={`text-[11.5px] text-justify sm:text-[12.2px] font-medium leading-relaxed text-[#edf2d8] mx-auto max-w-[270px] ${
                     animDirection ? 'animate-fade' : ''
                   }`}
                   key={currentCondition.id + '-desc'}
@@ -198,7 +198,7 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
 
         {/* Bottom Navigation Bar */}
         <nav
-          className="bg-[#34363a] rounded-t-[28px] pt-4 px-6 pb-5 max-sm:pb-[calc(16px+env(safe-area-inset-bottom,0px))] flex justify-around items-center mt-4 sm:mt-5 shadow-[0_-4px_18px_rgba(0,0,0,0.12)] flex-shrink-0 w-full"
+          className="bg-[#34363a] rounded-t-[28px] pt-4 px-6 pb-5 max-sm:pb-[calc(16px+env(safe-area-inset-bottom,0px))] flex justify-around items-center mt-auto shadow-[0_-4px_18px_rgba(0,0,0,0.12)] flex-shrink-0 w-full"
           aria-label="Navigasi Utama"
         >
           <button

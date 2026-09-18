@@ -32,8 +32,8 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
 
   const videoConstraints = {
     facingMode: facingMode,
-    width: { ideal: 1280 },
-    height: { ideal: 720 },
+    width: { ideal: 720 },
+    height: { ideal: 1280 },
   };
 
   // Tangkap foto dari webcam
@@ -121,7 +121,7 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
           {capturedImage ? (
             /* Mode Preview Foto yang Berhasil Diambil */
             <div className="w-full max-w-[350px] bg-[#728543] rounded-[28px] p-4 shadow-[0_16px_30px_-4px_rgba(90,115,45,0.38)] flex flex-col items-center animate-fade">
-              <div className="w-full aspect-[4/3] rounded-[20px] overflow-hidden bg-black mb-3.5 relative shadow-inner">
+              <div className="w-full aspect-[4/3] h-500px rounded-[20px] overflow-hidden bg-black mb-3.5 relative shadow-inner">
                 <img
                   src={capturedImage}
                   alt="Foto Daun Terdeteksi"
@@ -172,7 +172,7 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
             /* Mode Live Camera Viewfinder */
             <div className="w-full max-w-[360px] flex flex-col items-center">
               {/* Box Frame Kamera */}
-              <div className="w-full aspect-[3/4] max-h-[380px] rounded-[28px] overflow-hidden relative shadow-[0_16px_34px_rgba(0,0,0,0.25)] bg-[#1e251a] flex items-center justify-center border-2 border-white/40">
+              <div className="w-full aspect-[3/4] max-h-[480px] rounded-[28px] overflow-hidden relative shadow-[0_16px_34px_rgba(0,0,0,0.25)] bg-[#1e251a] flex items-center justify-center border-2 border-white/40">
                 {hasAgreedPermission ? (
                   <Webcam
                     audio={false}
@@ -232,11 +232,11 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
               </div>
 
               {/* Mode Selector (Portrait / Photo / Night) */}
-              <div className="flex items-center justify-center gap-7 mt-3 text-[12.5px] font-semibold select-none">
-                <span className="text-gray-400">Portrait</span>
-                <span className="text-[#eb8e2d] font-bold underline underline-offset-4">Photo</span>
-                <span className="text-gray-400">Night</span>
-              </div>
+              {/* <div className="flex items-center justify-center gap-7 mt-3 text-[12.5px] font-semibold select-none"> */}
+                {/* <span className="text-gray-400">Portrait</span> */}
+                {/* <span className="text-[#eb8e2d] font-bold underline underline-offset-4">Photo</span> */}
+                {/* <span className="text-gray-400">Night</span> */}
+              {/* </div> */}
 
               {/* Shutter & Controls Bar */}
               <div className="w-full flex items-center justify-between px-6 mt-2.5 sm:mt-3">
@@ -261,14 +261,14 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
                 />
 
                 {/* Tombol Jepret Kamera Utama */}
-                <button
+                {/* <button
                   type="button"
                   onClick={capturePhoto}
                   className="w-15 h-15 rounded-full border-4 border-[#eb8e2d] bg-white shadow-[0_4px_16px_rgba(235,142,45,0.4)] flex items-center justify-center transition-transform hover:scale-105 active:scale-90 cursor-pointer group"
                   aria-label="Ambil foto"
                 >
                   <div className="w-10 h-10 rounded-full bg-[#eb8e2d] group-active:scale-90 transition-transform" />
-                </button>
+                </button> */}
 
                 {/* Tombol Ganti Kamera Depan / Belakang */}
                 <button
