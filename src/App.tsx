@@ -4,13 +4,14 @@ import PageOne from './pageone';
 import Home from './index';
 import Camera from './camera';
 import Summary from './summary';
+import History from './history';
 
-type PageState = 'landing' | 'pageone' | 'home' | 'camera' | 'summary';
+type PageState = 'landing' | 'pageone' | 'home' | 'camera' | 'summary' | 'history';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageState>('landing');
 
-  const handleNavigate = (tab: 'home' | 'camera' | 'summary') => {
+  const handleNavigate = (tab: PageState) => {
     setCurrentPage(tab);
   };
 
@@ -88,6 +89,11 @@ export default function App() {
       {/* Summary Page */}
       {currentPage === 'summary' && (
         <Summary onNavigate={handleNavigate} activeTab="summary" />
+      )}
+
+      {/* History Page */}
+      {currentPage === 'history' && (
+        <History onNavigate={handleNavigate} activeTab="summary" />
       )}
     </div>
   );

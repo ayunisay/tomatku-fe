@@ -45,6 +45,7 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
       }
     }
   }, [webcamRef]);
+  void capturePhoto;
 
   // Ganti kamera depan / belakang
   const toggleCamera = () => {
@@ -74,9 +75,11 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
 
   return (
     <div className="w-full min-h-[100dvh] flex justify-center items-center bg-[#ede6d9] p-0 sm:p-4">
-      <main className="w-full sm:max-w-[430px] min-h-[100dvh] sm:min-h-0 sm:h-[min(100dvh-2rem,880px)] bg-gradient-to-b from-[#f9deb7] via-[#fdf5ea] to-[#fffdfa] flex flex-col justify-between sm:rounded-[36px] sm:shadow-2xl relative overflow-y-auto overflow-x-hidden">
-        {/* Modal Minta Izin Kamera (Muncul Sebelum Kamera Aktif) */}
-        {!hasAgreedPermission && (
+      <main className="w-full sm:max-w-[430px] h-[100dvh] sm:h-[min(100dvh-2rem,880px)] bg-gradient-to-b from-[#f9deb7] via-[#fdf5ea] to-[#fffdfa] flex flex-col sm:rounded-[36px] sm:shadow-2xl relative overflow-hidden">
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col justify-between">
+          {/* Modal Minta Izin Kamera (Muncul Sebelum Kamera Aktif) */}
+          {!hasAgreedPermission && (
           <div className="absolute inset-0 z-40 bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-5 animate-fade">
             <div className="w-full max-w-[340px] bg-[#233523]/90 backdrop-blur-xl border border-white/20 rounded-[26px] p-6 sm:p-7 shadow-[0_24px_50px_rgba(0,0,0,0.65)] flex flex-col items-center text-center">
               <h2 className="font-['Poppins'] font-black text-[18px] sm:text-[19px] text-white tracking-wide mb-3 uppercase leading-snug">
@@ -285,11 +288,12 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
               </div>
             </div>
           )}
+          </div>
         </div>
 
-        {/* Bottom Navigation Bar */}
+        {/* Fixed Bottom Navigation Bar */}
         <nav
-          className="bg-[#34363a] rounded-t-[28px] pt-4 px-6 pb-5 max-sm:pb-[calc(16px+env(safe-area-inset-bottom,0px))] flex justify-around items-center mt-2 shadow-[0_-4px_18px_rgba(0,0,0,0.12)] flex-shrink-0 w-full z-20"
+          className="bg-[#34363a] rounded-t-[28px] pt-4 px-6 pb-5 max-sm:pb-[calc(16px+env(safe-area-inset-bottom,0px))] flex justify-around items-center shadow-[0_-4px_18px_rgba(0,0,0,0.18)] flex-shrink-0 w-full z-30"
           aria-label="Navigasi Utama"
         >
           <button

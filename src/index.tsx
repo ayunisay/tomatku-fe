@@ -85,9 +85,11 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
 
   return (
     <div className="w-full min-h-[100dvh] flex justify-center items-center bg-[#ede6d9] p-0 sm:p-4">
-      <main className="w-full sm:max-w-[430px] min-h-[100dvh] sm:min-h-0 sm:h-[min(100dvh-2rem,880px)] bg-gradient-to-b from-[#f9deb7] via-[#fdf5ea] to-[#fffdfa] flex flex-col sm:rounded-[36px] sm:shadow-2xl relative overflow-y-auto overflow-x-hidden">
-        {/* Header Title */}
-        <header className="pt-20 sm:pt-16 pb-1 text-center flex-shrink-0">
+      <main className="w-full sm:max-w-[430px] h-[100dvh] sm:h-[min(100dvh-2rem,880px)] bg-gradient-to-b from-[#f9deb7] via-[#fdf5ea] to-[#fffdfa] flex flex-col sm:rounded-[36px] sm:shadow-2xl relative overflow-hidden">
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col">
+          {/* Header Title */}
+          <header className="pt-20 sm:pt-16 pb-1 text-center flex-shrink-0">
           <h1 className="flex flex-col items-center gap-0.5 font-['Poppins'] font-black text-[clamp(21px,5.8vw,28px)] leading-tight tracking-[-0.3px] text-[#eb8e2d] uppercase select-none text-stroke-title">
             <span>KENALI KONDISI</span>
             <span>DAUN TOMATMU</span>
@@ -195,10 +197,11 @@ export default function Home({ onNavigate, activeTab = 'home' }: HomeProps) {
             ))}
           </div>
         </section>
+        </div>
 
-        {/* Bottom Navigation Bar */}
+        {/* Fixed Bottom Navigation Bar */}
         <nav
-          className="bg-[#34363a] rounded-t-[28px] pt-4 px-6 pb-5 max-sm:pb-[calc(16px+env(safe-area-inset-bottom,0px))] flex justify-around items-center mt-auto shadow-[0_-4px_18px_rgba(0,0,0,0.12)] flex-shrink-0 w-full"
+          className="bg-[#34363a] rounded-t-[28px] pt-4 px-6 pb-5 max-sm:pb-[calc(16px+env(safe-area-inset-bottom,0px))] flex justify-around items-center shadow-[0_-4px_18px_rgba(0,0,0,0.18)] flex-shrink-0 w-full z-30"
           aria-label="Navigasi Utama"
         >
           <button
