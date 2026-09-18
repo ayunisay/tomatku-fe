@@ -4,11 +4,12 @@ import Webcam from 'react-webcam';
 import './index.css';
 
 interface CameraProps {
-  onNavigate?: (tab: 'home' | 'camera' | 'summary') => void;
+  onNavigate?: (tab: 'home' | 'camera' | 'summary' | 'history') => void;
   activeTab?: 'home' | 'camera' | 'summary';
+  previousPage?: 'landing' | 'pageone' | 'home' | 'camera' | 'summary' | 'history';
 }
 
-export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps) {
+export default function Camera({ onNavigate, activeTab = 'camera', previousPage = 'home' }: CameraProps) {
   const [currentTab, setCurrentTab] = useState<'home' | 'camera' | 'summary'>(activeTab);
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -23,11 +24,21 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
     setCurrentTab(activeTab);
   }, [activeTab]);
 
-  const handleTabClick = (tab: 'home' | 'camera' | 'summary') => {
-    setCurrentTab(tab);
+  const handleTabClick = (tab: 'home' | 'camera' | 'summary' | 'history') => {
+    if (tab === 'home' || tab === 'camera' || tab === 'summary') {
+      setCurrentTab(tab);
+    }
     if (onNavigate) {
       onNavigate(tab);
     }
+  };
+
+  const handleRejectPermission = () => {
+    const validTarget =
+      previousPage && ['home', 'summary', 'history'].includes(previousPage)
+        ? (previousPage as 'home' | 'summary' | 'history')
+        : 'home';
+    handleTabClick(validTarget);
   };
 
   const videoConstraints = {
@@ -93,7 +104,7 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
               <div className="w-full grid grid-cols-2 gap-3">
                 <button
                   type="button"
-                  onClick={() => handleTabClick('home')}
+                  onClick={handleRejectPermission}
                   className="w-full py-3 px-3 rounded-[18px] bg-[#752c2c] hover:bg-[#853434] active:scale-95 text-white font-bold text-[14.5px] shadow-md transition-all cursor-pointer"
                 >
                   Nanti Saja
@@ -226,9 +237,16 @@ export default function Camera({ onNavigate, activeTab = 'camera' }: CameraProps
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="py-2 px-4 bg-[#eb8e2d] rounded-full text-white text-[12.5px] font-bold cursor-pointer"
+                      className="py-2 px-4 bg-[#eb8e2d] hover:bg-[#d87f22] rounded-full text-white text-[12.5px] font-bold cursor-pointer mb-2.5 transition-all"
                     >
                       Pilih Foto dari Galeri
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRejectPermission}
+                      className="text-white/75 hover:text-white text-[12px] underline transition-colors cursor-pointer"
+                    >
+                      Kembali ke halaman sebelumnya
                     </button>
                   </div>
                 )}

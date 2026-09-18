@@ -10,9 +10,13 @@ type PageState = 'landing' | 'pageone' | 'home' | 'camera' | 'summary' | 'histor
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageState>('landing');
+  const [previousPage, setPreviousPage] = useState<PageState>('home');
 
   const handleNavigate = (tab: PageState) => {
-    setCurrentPage(tab);
+    if (tab !== currentPage) {
+      setPreviousPage(currentPage);
+      setCurrentPage(tab);
+    }
   };
 
   return (
@@ -83,7 +87,7 @@ export default function App() {
 
       {/* Camera Page */}
       {currentPage === 'camera' && (
-        <Camera onNavigate={handleNavigate} activeTab="camera" />
+        <Camera onNavigate={handleNavigate} activeTab="camera" previousPage={previousPage} />
       )}
 
       {/* Summary Page */}
