@@ -341,7 +341,7 @@ export default function Summary({ onNavigate, activeTab = 'summary' }: SummaryPr
               </div>
 
               {/* Label Early Blight (Left) */}
-              <div className="absolute top-[48%] -translate-y-1/2 left-0.5 text-center pointer-events-none">
+              <div className="absolute top-[48%] -translate-y-1/2 left-[-12%] text-center pointer-events-none">
                 <span className="block text-[10.5px] font-semibold text-[#4b5563] leading-tight">
                   Early Blight
                 </span>
@@ -351,7 +351,7 @@ export default function Summary({ onNavigate, activeTab = 'summary' }: SummaryPr
               </div>
 
               {/* Label Healthy (Right/Bottom-Right) */}
-              <div className="absolute top-[52%] -translate-y-1/2 right-1 text-center pointer-events-none">
+              <div className="absolute top-[52%] -translate-y-1/2 right-[-7%] text-center pointer-events-none">
                 <span className="block text-[10.5px] font-semibold text-[#4b5563] leading-tight">
                   Healthy
                 </span>
@@ -365,7 +365,7 @@ export default function Summary({ onNavigate, activeTab = 'summary' }: SummaryPr
           {/* Card 3: Distribusi keparahan */}
           <div className="w-full bg-white rounded-[24px] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 flex flex-col mb-4">
             <h3 className="text-[14px] font-bold text-[#2d3138] mb-3">
-              Distribusi keparahan
+              Tingkat keparahan
             </h3>
 
             {/* Gauge / Speedometer Chart */}
