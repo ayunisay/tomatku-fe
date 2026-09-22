@@ -1,72 +1,116 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './index.css';
+import { getStatsForDate, toISODateString, parseISODateString, INDONESIAN_MONTHS } from './utils/dummyData';
 
 interface HistoryProps {
   onNavigate?: (page: 'home' | 'camera' | 'summary' | 'history') => void;
   activeTab?: 'home' | 'camera' | 'summary';
 }
 
-interface DailyRecord {
-  dayName: string;
-  dateStr: string;
-  totalScan: number;
-  healthyPercent: number;
-  earlyBlightPercent: number;
-  unknownPercent: number;
-  needleAngle: number;
-}
-
-const dummyHistoryData: DailyRecord[] = [
-  {
-    dayName: 'SELASA',
-    dateStr: '23/10/28',
-    totalScan: 48,
-    healthyPercent: 60,
-    earlyBlightPercent: 30,
-    unknownPercent: 10,
-    needleAngle: 72,
-  },
-  {
-    dayName: 'SENIN',
-    dateStr: '23/10/27',
-    totalScan: 56,
-    healthyPercent: 55,
-    earlyBlightPercent: 35,
-    unknownPercent: 10,
-    needleAngle: 50,
-  },
-  {
-    dayName: 'MINGGU',
-    dateStr: '23/10/26',
-    totalScan: 32,
-    healthyPercent: 75,
-    earlyBlightPercent: 20,
-    unknownPercent: 5,
-    needleAngle: 80,
-  },
-  {
-    dayName: 'SABTU',
-    dateStr: '23/10/25',
-    totalScan: 41,
-    healthyPercent: 68,
-    earlyBlightPercent: 22,
-    unknownPercent: 10,
-    needleAngle: 75,
-  },
-];
-
 export default function History({ onNavigate, activeTab = 'summary' }: HistoryProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
+  const [pickerMonth, setPickerMonth] = useState<number>(new Date().getMonth());
+  const [pickerYear, setPickerYear] = useState<number>(new Date().getFullYear());
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
-  const currentRecord = dummyHistoryData[currentIndex];
+  const currentRecord = getStatsForDate(currentDate);
+
+  const openCalendar = () => {
+    setPickerMonth(currentDate.getMonth());
+    setPickerYear(currentDate.getFullYear());
+    setIsCalendarOpen(true);
+  };
+
+  // Calendar and Date restrictions (future dates disabled)
+  const today = new Date();
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+
+  const isCurrentDateTodayOrFuture =
+    new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()).getTime() >= startOfToday;
+
+  const isViewingCurrentOrFutureMonth =
+    pickerYear > today.getFullYear() ||
+    (pickerYear === today.getFullYear() && pickerMonth >= today.getMonth());
 
   const handlePrevDay = () => {
-    setCurrentIndex((prev) => (prev < dummyHistoryData.length - 1 ? prev + 1 : 0));
+    setCurrentDate((prev) => {
+      const next = new Date(prev);
+      next.setDate(next.getDate() - 1);
+      return next;
+    });
   };
 
   const handleNextDay = () => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : dummyHistoryData.length - 1));
+    setCurrentDate((prev) => {
+      const next = new Date(prev);
+      next.setDate(next.getDate() + 1);
+      const nextTime = new Date(next.getFullYear(), next.getMonth(), next.getDate()).getTime();
+      if (nextTime > startOfToday) {
+        return prev;
+      }
+      return next;
+    });
   };
+
+  const handleSelectDay = (day: number) => {
+    const targetTime = new Date(pickerYear, pickerMonth, day).getTime();
+    if (targetTime > startOfToday) {
+      return; // Tidak bisa memilih tanggal masa depan
+    }
+    const newDate = new Date(pickerYear, pickerMonth, day);
+    setCurrentDate(newDate);
+    setIsCalendarOpen(false);
+  };
+
+  const handleSelectToday = () => {
+    const t = new Date();
+    setCurrentDate(t);
+    setPickerMonth(t.getMonth());
+    setPickerYear(t.getFullYear());
+    setIsCalendarOpen(false);
+  };
+
+  const handleSelectYesterday = () => {
+    const yest = new Date();
+    yest.setDate(yest.getDate() - 1);
+    setCurrentDate(yest);
+    setPickerMonth(yest.getMonth());
+    setPickerYear(yest.getFullYear());
+    setIsCalendarOpen(false);
+  };
+
+  const handleSelectDaysAgo = (daysAgo: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() - daysAgo);
+    setCurrentDate(d);
+    setPickerMonth(d.getMonth());
+    setPickerYear(d.getFullYear());
+    setIsCalendarOpen(false);
+  };
+
+  const handlePrevMonth = () => {
+    if (pickerMonth === 0) {
+      setPickerMonth(11);
+      setPickerYear((y) => y - 1);
+    } else {
+      setPickerMonth((m) => m - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (isViewingCurrentOrFutureMonth) return;
+    if (pickerMonth === 11) {
+      setPickerMonth(0);
+      setPickerYear((y) => y + 1);
+    } else {
+      setPickerMonth((m) => m + 1);
+    }
+  };
+
+  // Calendar calculations
+  const firstDayOfMonth = new Date(pickerYear, pickerMonth, 1).getDay(); // 0 = Min, 1 = Sen, ...
+  const daysInMonth = new Date(pickerYear, pickerMonth + 1, 0).getDate();
 
   // Donut Chart calculations (radius = 72, circumference = 2 * pi * 72 = 452.39)
   const radius = 72;
@@ -122,27 +166,51 @@ export default function History({ onNavigate, activeTab = 'summary' }: HistoryPr
           </div>
 
           {/* Orange Button: Pilih Hari */}
-          <button
-            type="button"
-            className="w-full bg-[#eb8e2d] hover:brightness-105 active:scale-[0.99] text-white font-semibold text-[13.5px] py-2.5 px-4 rounded-[12px] flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
-          >
-            <svg
-              className="w-4.5 h-4.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="relative w-full">
+            <button
+              type="button"
+              onClick={openCalendar}
+              className="w-full bg-[#eb8e2d] hover:brightness-105 active:scale-[0.99] text-white font-semibold text-[13.5px] py-2.5 px-4 rounded-[12px] flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
             >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-              <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" strokeWidth="2.8" />
-            </svg>
-            <span>Pilih Hari</span>
-          </button>
+              <svg
+                className="w-4.5 h-4.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+                <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" strokeWidth="2.8" />
+              </svg>
+              <span>Pilih Hari</span>
+            </button>
+
+            {/* Hidden native date input fallback */}
+            <input
+              ref={dateInputRef}
+              type="date"
+              max={toISODateString(today)}
+              value={toISODateString(currentDate)}
+              onChange={(e) => {
+                if (e.target.value) {
+                  const d = parseISODateString(e.target.value);
+                  const targetTime = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+                  if (targetTime <= startOfToday) {
+                    setCurrentDate(d);
+                    setPickerMonth(d.getMonth());
+                    setPickerYear(d.getFullYear());
+                  }
+                }
+              }}
+              className="hidden"
+              aria-label="Pilih hari dari kalender"
+            />
+          </div>
 
           {/* Date Selector Row with Arrows */}
           <div className="flex items-center justify-between px-2 py-1 select-none">
@@ -165,7 +233,11 @@ export default function History({ onNavigate, activeTab = 'summary' }: HistoryPr
               </svg>
             </button>
 
-            <div className="text-center">
+            <div
+              className="text-center cursor-pointer hover:opacity-80 active:scale-95 transition-all"
+              onClick={openCalendar}
+              title="Klik untuk memilih tanggal"
+            >
               <h2 className="font-['Poppins'] font-black text-[20px] text-[#22252a] tracking-tight leading-tight">
                 {currentRecord.dayName}
               </h2>
@@ -177,7 +249,13 @@ export default function History({ onNavigate, activeTab = 'summary' }: HistoryPr
             <button
               type="button"
               onClick={handleNextDay}
-              className="w-8 h-8 flex items-center justify-center text-[#555a64] hover:text-[#22252a] active:scale-90 transition-all cursor-pointer"
+              disabled={isCurrentDateTodayOrFuture}
+              title={isCurrentDateTodayOrFuture ? 'Belum ada pemindaian (tanggal mendatang)' : undefined}
+              className={`w-8 h-8 flex items-center justify-center transition-all ${
+                isCurrentDateTodayOrFuture
+                  ? 'text-[#abb1bc] opacity-30 cursor-not-allowed'
+                  : 'text-[#555a64] hover:text-[#22252a] active:scale-90 cursor-pointer'
+              }`}
               aria-label="Hari berikutnya"
             >
               <svg
@@ -547,6 +625,173 @@ export default function History({ onNavigate, activeTab = 'summary' }: HistoryPr
             Summary
           </button>
         </nav>
+
+        {/* Calendar Modal */}
+        {isCalendarOpen && (
+          <div
+            className="absolute inset-0 z-50 bg-black/55 backdrop-blur-[2px] flex flex-col justify-end sm:justify-center p-0 sm:p-4 transition-all duration-300"
+            onClick={() => setIsCalendarOpen(false)}
+          >
+            <div
+              className="w-full bg-[#fdfbf7] rounded-t-[32px] sm:rounded-[28px] p-5 shadow-2xl flex flex-col border border-orange-100/50"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-gray-200/80">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-[#eb8e2d]/15 flex items-center justify-center text-[#eb8e2d]">
+                    <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-['Poppins'] font-bold text-[16px] text-[#22252a] leading-tight">
+                      Pilih Tanggal
+                    </h3>
+                    <p className="text-[11px] text-[#6b7280]">
+                      Lihat riwayat pemindaian harian
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsCalendarOpen(false)}
+                  className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-800 transition-all cursor-pointer active:scale-95"
+                  aria-label="Tutup kalender"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Month Navigation */}
+              <div className="flex items-center justify-between py-2.5 px-1">
+                <button
+                  type="button"
+                  onClick={handlePrevMonth}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[#555a64] hover:bg-black/5 hover:text-[#22252a] active:scale-90 transition-all cursor-pointer"
+                  aria-label="Bulan sebelumnya"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 18l-6-6 6-6" />
+                  </svg>
+                </button>
+
+                <span className="font-['Poppins'] font-bold text-[15px] text-[#22252a]">
+                  {INDONESIAN_MONTHS[pickerMonth]} {pickerYear}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleNextMonth}
+                  disabled={isViewingCurrentOrFutureMonth}
+                  title={isViewingCurrentOrFutureMonth ? 'Bulan mendatang belum tersedia' : undefined}
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                    isViewingCurrentOrFutureMonth
+                      ? 'text-gray-300 opacity-30 cursor-not-allowed'
+                      : 'text-[#555a64] hover:bg-black/5 hover:text-[#22252a] active:scale-90 cursor-pointer'
+                  }`}
+                  aria-label="Bulan berikutnya"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Day of Week Headers */}
+              <div className="grid grid-cols-7 gap-1 text-center font-semibold text-[11px] text-[#8e95a2] py-1 border-b border-gray-100">
+                <span>Min</span>
+                <span>Sen</span>
+                <span>Sel</span>
+                <span>Rab</span>
+                <span>Kam</span>
+                <span>Jum</span>
+                <span>Sab</span>
+              </div>
+
+              {/* Day Numbers Grid */}
+              <div className="grid grid-cols-7 gap-1.5 pt-2">
+                {/* Empty cells for leading offset */}
+                {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+                  <div key={`empty-${i}`} className="h-9" />
+                ))}
+
+                {/* Days of current month */}
+                {Array.from({ length: daysInMonth }).map((_, i) => {
+                  const dayNum = i + 1;
+                  const isFutureDate =
+                    new Date(pickerYear, pickerMonth, dayNum).getTime() > startOfToday;
+
+                  const isSelected =
+                    currentDate.getFullYear() === pickerYear &&
+                    currentDate.getMonth() === pickerMonth &&
+                    currentDate.getDate() === dayNum;
+
+                  const isTodayDate =
+                    today.getFullYear() === pickerYear &&
+                    today.getMonth() === pickerMonth &&
+                    today.getDate() === dayNum;
+
+                  return (
+                    <button
+                      key={dayNum}
+                      type="button"
+                      disabled={isFutureDate}
+                      onClick={() => !isFutureDate && handleSelectDay(dayNum)}
+                      title={isFutureDate ? 'Belum ada pemindaian (tanggal mendatang)' : undefined}
+                      className={`h-9 w-full rounded-[10px] flex flex-col items-center justify-center font-['Poppins'] text-[13px] transition-all ${
+                        isFutureDate
+                          ? 'text-gray-300 bg-gray-50/40 cursor-not-allowed opacity-35 select-none'
+                          : isSelected
+                          ? 'bg-[#eb8e2d] text-white font-black shadow-md shadow-[#eb8e2d]/40 scale-105 cursor-pointer active:scale-90'
+                          : isTodayDate
+                          ? 'border-2 border-[#eb8e2d] text-[#eb8e2d] font-bold hover:bg-orange-50 cursor-pointer active:scale-90'
+                          : 'text-[#2d3138] font-medium hover:bg-gray-100/80 cursor-pointer active:scale-90'
+                      }`}
+                    >
+                      <span>{dayNum}</span>
+                      {isTodayDate && !isSelected && (
+                        <span className="w-1 h-1 rounded-full bg-[#eb8e2d] -mt-0.5" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Quick Presets */}
+              <div className="flex items-center gap-2 pt-3 border-t border-gray-100 mt-2">
+                <button
+                  type="button"
+                  onClick={handleSelectToday}
+                  className="flex-1 py-1.5 px-2.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#eb8e2d] font-semibold text-[11.5px] text-center transition-colors cursor-pointer"
+                >
+                  Hari Ini
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSelectYesterday}
+                  className="flex-1 py-1.5 px-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-[#4b5563] font-semibold text-[11.5px] text-center transition-colors cursor-pointer"
+                >
+                  Kemarin
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectDaysAgo(7)}
+                  className="flex-1 py-1.5 px-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-[#4b5563] font-semibold text-[11.5px] text-center transition-colors cursor-pointer"
+                >
+                  7 Hari Lalu
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
