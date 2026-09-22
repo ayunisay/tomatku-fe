@@ -25,15 +25,31 @@
 
 4. **Dashboard Statistik Deteksi (*Summary Page*)**
    - **Banner Riwayat**: Tombol pintas (*"See the history?"*) untuk langsung menuju halaman riwayat pemindaian.
-   - **Filter Periode Dinamis**: Pilihan filter data (*Hari ini*, *Minggu ini*, *Bulan ini*) dan tombol kalender dengan pembaruan data secara dinamis.
+   - **Filter Periode Dinamis & Pemilih Tanggal Kalender**:
+     - Pilihan filter cepat: *Hari ini*, *Minggu ini*, dan *Bulan ini*.
+     - **Kalender Aktif (*Date Picker*)**: Tombol ikon kalender interaktif untuk memilih tanggal spesifik apapun.
+     - **Indikator Tanggal Aktif**: Menampilkan badge tanggal terpilih dengan opsi reset kembali ke "Hari ini".
+     - **Data Statistik Dinamis**: Angka total pemindaian, persentase (*Healthy*, *Early Blight*, *Unknown*), dan posisi jarum speedometer berubah otomatis secara dinamis dan realistis mengikuti tanggal yang dipilih.
    - **Kartu Total Deteksi**: Ringkasan total pemindaian daun dengan ilustrasi daun bersinar dan kaca pembesar.
-   - **Donut Chart Distribusi Hasil Klasifikasi**: Visualisasi rasio persentase daun *Healthy*, *Early Blight*, dan *Unknown*.
-   - **Speedometer Gauge Distribusi Keparahan**: Indikator tingkat keparahan tanaman dari level **PARAH** hingga **NORMAL** dengan jarum penunjuk interaktif.
+   - **Donut Chart Distribusi Hasil Klasifikasi**: Visualisasi rasio persentase daun dengan transisi animasi yang halus.
+   - **Speedometer Gauge Distribusi Keparahan**: Indikator tingkat keparahan tanaman dari level **PARAH** hingga **NORMAL** dengan rotasi jarum penunjuk yang tersinkronisasi otomatis dengan tingkat kesehatan daun.
 
 5. **Halaman Riwayat Pemindaian (*History Page*)**
-   - Diakses langsung dari halaman Summary dengan tombol kembali (`←`).
-   - Tombol **"Pilih Hari"** dan pemilih tanggal interaktif (*Date Carousel*) untuk menelusuri data deteksi hari-hari sebelumnya.
-   - Rekap kartu statistik harian, donut chart, dan speedometer keparahan per tanggal terpilih.
+   - Diakses langsung dari halaman Summary melalui banner *"See the history?"* atau navigasi langsung dengan tombol kembali (`←`).
+   - **Modal Kalender Interaktif (*In-App Calendar Modal*)**:
+     - Membuka dialog kalender *bottom-sheet* modern saat menekan tombol **"Pilih Hari"** maupun teks tanggal aktif.
+     - Tampilan bulan dan tahun berbahasa Indonesia dengan kontrol panah navigasi bulan (`<` dan `>`).
+     - Grid tanggal lengkap dengan *highlight* oranye khas TomatKU untuk tanggal terpilih serta penanda khusus untuk hari ini.
+     - Tombol pintas (*Presets*): **Hari Ini**, **Kemarin**, dan **7 Hari Lalu** untuk navigasi kilat.
+   - **Proteksi Tanggal Masa Depan (*Disable Future Dates*)**:
+     - Tanggal-tanggal setelah hari ini otomatis **dinonaktifkan (*disabled*)**, bergaya redup (*muted/grayed out*), dan tidak dapat dipilih karena belum ada pemindaian yang terjadi di masa mendatang.
+     - Tombol panah hari berikutnya (`>`) pada navigasi harian utama otomatis terkunci saat pengguna berada di tanggal hari ini.
+     - Tombol navigasi bulan berikutnya (`>`) pada modal kalender dikunci jika sudah berada di bulan berjalan.
+   - **Navigasi Harian Cepat**: Tombol panah sebelumnya (`<`) dan berikutnya (`>`) untuk berpindah hari demi hari secara mulus.
+   - **Data Dummy Deterministik & Realistis**:
+     - Setiap tanggal memiliki angka statistik unik dan konsisten yang dihitung secara matematis melalui `dummyData.ts`.
+     - Data mencakup: angka **Total Deteksi**, proporsi grafik **Donut Chart** (*Healthy*, *Early Blight*, *Unknown*), serta rotasi jarum **Speedometer Tingkat Keparahan** (*PARAH* hingga *NORMAL*).
+     - Format tanggal menggunakan standar Indonesia: `DD/MM/YY` (misal: `22/09/26`).
 
 6. **Bilah Navigasi Bawah Terkunci (*Fixed Bottom Navigation*)**
    - Komponen navigasi bawah (**Home**, **Camera**, **Summary**) dibuat *fixed* dan selalu terlihat di posisi bawah layar.
@@ -102,6 +118,8 @@ tomatku-fe/
 ├── public/              # File statis publik
 ├── src/
 │   ├── assets/          # Aset gambar daun sehat, bercak daun, & ikon
+│   ├── utils/
+│   │   └── dummyData.ts # Generator statistik dinamis & kalkulator tanggal
 │   ├── App.tsx          # Navigasi utama, state root, & previousPage tracking
 │   ├── camera.tsx       # Halaman deteksi kamera & upload foto
 │   ├── history.tsx      # Halaman riwayat deteksi harian
