@@ -229,7 +229,7 @@ export default function Camera({ onNavigate, activeTab = 'camera', previousPage 
                 {/* Fallback Jika Akses Kamera Ditolak / Tidak Tersedia */}
                 {hasPermission === false && (
                   <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center p-6 text-center z-20">
-                    <div className="text-3xl mb-2">📷⚠️</div>
+                    {/* <div className="text-3xl mb-2">📷⚠️</div> */}
                     <h3 className="text-white font-bold text-[15px] mb-1">Akses Kamera Belum Diizinkan</h3>
                     <p className="text-white/70 text-[12px] mb-4">
                       Silakan izinkan akses kamera di browser Anda atau upload foto daun dari galeri.
