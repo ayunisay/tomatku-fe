@@ -9,8 +9,52 @@ interface SummaryProps {
 
 type Period = 'hari' | 'minggu' | 'bulan';
 
+interface RecommendationItem {
+  id: number;
+  title: string;
+  points: string[];
+}
+
+const earlyBlightRecommendations: RecommendationItem[] = [
+  {
+    id: 1,
+    title: '1. Sanitasi & Pembersihan',
+    points: [
+      'Potong daun yang memiliki bercak konsentris cokelat/hitam, prioritaskan daun tua di bagian bawah.',
+      'Bakar atau kubur sisa tanaman yang sakit jauh dari lahan. Jangan dijadikan kompos karena spora jamur tetap bisa bertahan hidup.',
+      'Bersihkan gunting pangkas atau pisau dengan disinfektan/alkohol sebelum pindah ke tanaman lain agar spora tidak menyebar.',
+    ],
+  },
+  {
+    id: 2,
+    title: '2. Pengendalian Kelembapan & Pola Siram',
+    points: [
+      'Basahi tanah langsung di area akar atau gunakan irigasi tetes agar daun tetap kering.',
+      'Jika menggunakan semprotan manual, siram di pagi hari agar air yang menempel di daun cepat menguap oleh sinar matahari.',
+      'Pasang mulsa plastik atau jerami untuk mencegah percikan air tanah yang membawa spora memantul ke daun bawah.',
+    ],
+  },
+  {
+    id: 3,
+    title: '3. Pengaturan Sirkulasi Udara',
+    points: [
+      'Hindari menanam tomat terlalu rapat agar aliran udara antar kanopi lancar dan kelembapan mikro turun',
+      'Buang tunas air yang tidak produktif agar tanaman lebih tegak dan daun tidak saling menumpuk',
+    ],
+  },
+  {
+    id: 4,
+    title: '4. Perlindungan & Pengobatan (Fungisida)',
+    points: [
+      'Hindari menanam tomat terlalu rapat agar aliran udara antar kanopi lancar dan kelembapan mikro turun',
+      'Buang tunas air yang tidak produktif agar tanaman lebih tegak dan daun tidak saling menumpuk',
+    ],
+  },
+];
+
 export default function Summary({ onNavigate, activeTab = 'summary' }: SummaryProps) {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>('hari');
+  const [openAccordion, setOpenAccordion] = useState<number | null>(null);
 
   const currentStats = getPeriodStats(selectedPeriod);
 
@@ -66,6 +110,71 @@ export default function Summary({ onNavigate, activeTab = 'summary' }: SummaryPr
             </button>
           </div>
 
+          {/* Card: Rekomendasi cara penanganan Early Blight */}
+          <div className="w-full bg-white rounded-[22px] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 flex flex-col">
+            <h3 className="text-[13.5px] font-bold text-[#2d3138] mb-3 tracking-tight">
+              Rekomendasi cara penanganan Early Blight
+            </h3>
+
+            <div className="flex flex-col gap-3">
+              {earlyBlightRecommendations.map((item) => {
+                const isOpen = openAccordion === item.id;
+                return (
+                  <div key={item.id} className="flex flex-col">
+                    <button
+                      type="button"
+                      onClick={() => setOpenAccordion(isOpen ? null : item.id)}
+                      className="w-full flex items-center justify-between text-left group cursor-pointer"
+                    >
+                      <span className="text-[13px] font-medium text-[#2d3138] group-hover:text-[#eb8e2d] transition-colors leading-tight">
+                        {item.title}
+                      </span>
+                      <span className="w-5.5 h-5.5 rounded-[5px] bg-[#34363a] text-white flex items-center justify-center flex-shrink-0 group-hover:bg-[#454a52] active:scale-95 transition-all shadow-sm">
+                        {isOpen ? (
+                          <svg
+                            className="w-3.5 h-3.5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M12 19V5M5 12l7-7 7 7" />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="w-3.5 h-3.5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M12 5v14M19 12l-7 7-7-7" />
+                          </svg>
+                        )}
+                      </span>
+                    </button>
+
+                    {isOpen && (
+                      <div className="mt-2.5 pl-4 pr-1">
+                        <ul className="space-y-1.5 list-disc text-[11.5px] leading-relaxed text-[#4b5563]">
+                          {item.points.map((point, idx) => (
+                            <li key={idx} className="pl-0.5">
+                              {point}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Time Filter Buttons + Calendar */}
           <div className="flex items-center gap-2">
             <button
@@ -102,6 +211,30 @@ export default function Summary({ onNavigate, activeTab = 'summary' }: SummaryPr
               }`}
             >
               Bulan ini
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onNavigate?.('history')}
+              className="py-2 px-2.5 rounded-[12px] bg-[#eb8e2d] hover:brightness-105 active:scale-95 text-white flex items-center justify-center shadow-sm transition-all cursor-pointer flex-shrink-0"
+              aria-label="Pilih tanggal di riwayat"
+              title="Buka riwayat per tanggal"
+            >
+              <svg
+                className="w-4 h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+                <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" strokeWidth="2.8" />
+              </svg>
             </button>
           </div>
 
@@ -309,7 +442,7 @@ export default function Summary({ onNavigate, activeTab = 'summary' }: SummaryPr
           {/* Card 3: Distribusi keparahan */}
           <div className="w-full bg-white rounded-[24px] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 flex flex-col mb-4">
             <h3 className="text-[14px] font-bold text-[#2d3138] mb-3">
-              Tingkat keparahan
+              Distribusi keparahan
             </h3>
 
             {/* Gauge / Speedometer Chart */}
