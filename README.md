@@ -25,14 +25,19 @@
 
 4. **Dashboard Statistik Deteksi (*Summary Page*)**
    - **Banner Riwayat**: Tombol pintas (*"See the history?"*) untuk langsung menuju halaman riwayat pemindaian.
-   - **Filter Periode Dinamis & Pemilih Tanggal Kalender**:
+   - **Rekomendasi Penanganan Early Blight (*Dropdown Accordion*)**:
+     - Panduan kuratif dan preventif interaktif berbasis kartu (*accordion list*) yang dapat dibuka-tutup (*expand/collapse*):
+       1. **Sanitasi & Pembersihan**: Petunjuk pemangkasan daun berbercak konsentris, pemusnahan sisa tanaman sakit, serta sterilisasi alat potong.
+       2. **Pengendalian Kelembapan & Pola Siram**: Penerapan irigasi akar, jadwal siram pagi hari, serta pemasangan mulsa penahan pantulan spora.
+       3. **Pengaturan Sirkulasi Udara**: Penataan jarak tanam antar kanopi dan pembuangan tunas air tidak produktif untuk menekan kelembapan mikro.
+       4. **Perlindungan & Pengobatan (Fungisida)**: Rekomendasi tindakan perlindungan dan panduan aplikasi pengobatan.
+     - Ikon indikator dinamis yang beralih antara panah bawah (**↓**) saat tertutup dan panah atas (**↑**) saat terbuka.
+   - **Filter Periode Cepat & Tombol Kalender Riwayat**:
      - Pilihan filter cepat: *Hari ini*, *Minggu ini*, dan *Bulan ini*.
-     - **Kalender Aktif (*Date Picker*)**: Tombol ikon kalender interaktif untuk memilih tanggal spesifik apapun.
-     - **Indikator Tanggal Aktif**: Menampilkan badge tanggal terpilih dengan opsi reset kembali ke "Hari ini".
-     - **Data Statistik Dinamis**: Angka total pemindaian, persentase (*Healthy*, *Early Blight*, *Unknown*), dan posisi jarum speedometer berubah otomatis secara dinamis dan realistis mengikuti tanggal yang dipilih.
+     - **Pintasan Kalender**: Tombol kalender oranye di samping filter periode untuk langsung membuka riwayat pemindaian per tanggal.
    - **Kartu Total Deteksi**: Ringkasan total pemindaian daun dengan ilustrasi daun bersinar dan kaca pembesar.
-   - **Donut Chart Distribusi Hasil Klasifikasi**: Visualisasi rasio persentase daun dengan transisi animasi yang halus.
-   - **Speedometer Gauge Distribusi Keparahan**: Indikator tingkat keparahan tanaman dari level **PARAH** hingga **NORMAL** dengan rotasi jarum penunjuk yang tersinkronisasi otomatis dengan tingkat kesehatan daun.
+   - **Donut Chart Distribusi Hasil Klasifikasi**: Visualisasi rasio persentase daun (*Healthy*, *Early Blight*, *Unknown*) dengan label dan transisi animasi yang halus.
+   - **Speedometer Gauge Distribusi Keparahan**: Indikator tingkat keparahan tanaman dari level **PARAH** hingga **NORMAL** dengan jarum speedometer presisi.
 
 5. **Halaman Riwayat Pemindaian (*History Page*)**
    - Diakses langsung dari halaman Summary melalui banner *"See the history?"* atau navigasi langsung dengan tombol kembali (`←`).
